@@ -31,6 +31,10 @@ class EvaluationBundle:
 
 
 def _token_f1(reference: str, prediction: str) -> float:
+    if isinstance(reference, list):
+        reference = ", ".join(str(r) for r in reference)
+    if isinstance(prediction, list):
+        prediction = ", ".join(str(p) for p in prediction)
     ref_tokens = normalize_whitespace(reference).lower().split()
     pred_tokens = normalize_whitespace(prediction).lower().split()
     if not ref_tokens or not pred_tokens:
@@ -46,6 +50,10 @@ def _token_f1(reference: str, prediction: str) -> float:
 
 
 def _judge_answer(settings: Settings, question: str, reference: str, prediction: str) -> JudgeVerdict:
+    if isinstance(reference, list):
+        reference = ", ".join(str(r) for r in reference)
+    if isinstance(prediction, list):
+        prediction = ", ".join(str(p) for p in prediction)
     prompt = f"""
 Evaluate the model answer against the reference answer.
 
@@ -79,23 +87,51 @@ def _run_ragas(settings: Settings, answers: list[dict[str, Any]]) -> dict[str, A
             shim.ChatVertexAI = type("ChatVertexAI", (), {})
             sys.modules["langchain_community.chat_models.vertexai"] = shim
         from ragas import evaluate
-        from ragas.metrics import answer_relevancy, context_precision, context_recall, faithfulness
+        from ragas.metrics import context_precision, context_recall, faithfulness
+
+        def _to_str(v: Any) -> str:
+            if isinstance(v, list):
+                return ", ".join(str(x) for x in v)
+            return str(v) if v is not None else ""
 
         dataset = Dataset.from_dict(
             {
                 "question": [item["question"] for item in answers],
-                "answer": [item["answer"] for item in answers],
-                "ground_truth": [item["ground_truth"] for item in answers],
-                "contexts": [item["retrieved_contexts"] for item in answers],
+                "answer": [_to_str(item["answer"]) for item in answers],
+                "ground_truth": [_to_str(item["ground_truth"]) for item in answers],
+                "contexts": [
+                    [str(c) for c in item["retrieved_contexts"]] if isinstance(item["retrieved_contexts"], list)
+                    else [str(item["retrieved_contexts"])]
+                    for item in answers
+                ],
             }
         )
         result = evaluate(
             dataset,
-            metrics=[answer_relevancy, context_precision, context_recall, faithfulness],
+            metrics=[context_precision, context_recall, faithfulness],
             llm=build_llm(settings=settings, temperature=0.0),
             embeddings=MiniLMEmbeddings(settings.embedding_model),
         )
-        return dict(result)
+        # Robust conversion: handle NaN scores and partial failures
+        import math
+        metrics_list = [context_precision, context_recall, faithfulness]
+        try:
+            raw = dict(result)
+            return {
+                k: (None if isinstance(v, float) and math.isnan(v) else v)
+                for k, v in raw.items()
+            }
+        except Exception:
+            # Fall back: extract each metric score individually
+            scores: dict[str, Any] = {}
+            for metric in metrics_list:
+                name = getattr(metric, "name", str(metric))
+                try:
+                    val = result[name]
+                    scores[name] = None if (isinstance(val, float) and math.isnan(val)) else val
+                except Exception:
+                    scores[name] = None
+            return scores if scores else {"warning": "RAGAS completed but no scores extracted"}
     except Exception as exc:  # pragma: no cover
         return {"error": f"Ragas evaluation failed: {exc}"}
 

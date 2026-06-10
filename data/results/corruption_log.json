@@ -1,0 +1,86 @@
+[
+  {
+    "corruption": "drop_latest_records",
+    "count": 3,
+    "paper_ids": [
+      "10.21203/rs.3.rs-9882260/v1",
+      "10.54254/2753-8818/2026.dl34055",
+      "10.22214/ijraset.2026.82233"
+    ]
+  },
+  {
+    "corruption": "blank_summary",
+    "paper_id": "10.2139/ssrn.6741395",
+    "original_length": 2307
+  },
+  {
+    "corruption": "blank_summary",
+    "paper_id": "10.2139/ssrn.6761739",
+    "original_length": 1170
+  },
+  {
+    "corruption": "inject_noise",
+    "paper_id": "10.20944/preprints202604.0339.v1",
+    "noise": "[CORRUPTED DATA]"
+  },
+  {
+    "corruption": "inject_noise",
+    "paper_id": "10.2139/ssrn.6271858",
+    "noise": "XXXNOISEXX"
+  },
+  {
+    "corruption": "inject_noise",
+    "paper_id": "10.36085/jsai.v9i1.9632",
+    "noise": "XXXNOISEXX"
+  },
+  {
+    "corruption": "truncate_title",
+    "paper_id": "10.35314/3y9hy151",
+    "original_title": "Implementation of Retrieval-Augmented Generation Method on Large Language Model for Development of Campus Service and Information Chatbot",
+    "truncated_title": "Implementa..."
+  },
+  {
+    "corruption": "truncate_title",
+    "paper_id": "10.2139/ssrn.6756498",
+    "original_title": "Industrial Multi-AI Agent Collaborative System based on Large-Small Model Fusion and Retrieval-Augmented Generation",
+    "truncated_title": "Industrial Multi-A..."
+  },
+  {
+    "corruption": "truncate_title",
+    "paper_id": "10.2139/ssrn.6761739",
+    "original_title": "AI-Powered Smart Advisory System for Precision Agriculture Using Large Language Models and Retrieval-Augmented Generation",
+    "truncated_title": "AI-Powered Smart Ad..."
+  },
+  {
+    "corruption": "stale_date",
+    "paper_id": "10.64898/2026.01.24.26344477",
+    "original_date": "2026-01-26",
+    "new_date": "2022-04-02"
+  },
+  {
+    "corruption": "stale_date",
+    "paper_id": "10.2139/ssrn.6761739",
+    "original_date": "2026-05-20",
+    "new_date": "2022-06-02"
+  },
+  {
+    "corruption": "stale_date",
+    "paper_id": "10.1051/e3sconf/202668908004",
+    "original_date": "2026-01-01",
+    "new_date": "2022-06-23"
+  },
+  {
+    "corruption": "stale_date",
+    "paper_id": "10.32473/flairs.39.1.141782",
+    "original_date": "2026-05-06",
+    "new_date": "2023-03-04"
+  },
+  {
+    "corruption": "duplicate_rows",
+    "count": 2,
+    "paper_ids": [
+      "10.2139/ssrn.6271858",
+      "10.20944/preprints202602.0996.v1"
+    ]
+  }
+]
